@@ -5,39 +5,87 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class SecurityControllerTest extends WebTestCase
 {
-    public function testRedirectLoggedInUser()
+    public function testLoginPageIsAccessible()
+    {
+        $client = static::createClient();
+        $client->request('GET', '/login');
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+    }
+
+
+
+    public function testAuthenticatedUserIsRedirectedToHomePage()
     {
         $client = static::createClient();
         $user = new User();
         $user->setFullName('John Doe');
-        $user->setEmail('john@example.com');
+        $user->setUsername('john_doe');
+        $user->setEmail('invalid_email');
         $user->setPassword('password');
         $user->setRoles([User::ROLE_USER]);
         $client->loginUser($user);
-        // Effectue une requête GET vers la page de connexion
+
         $client->request('GET', '/login');
-        // Vérifie si le client est redirigé vers une autre page
-        $this->assertTrue($client->getResponse()->isRedirect());
+
+        $this->assertEquals(302, $client->getResponse()->getStatusCode());
+        $this->assertEquals('/', $client->getResponse()->headers->get('Location'));
     }
 
 
-    public function testAuthenticationError()
+
+    public function testAuthenticationErrorsAreDisplayed()
     {
         $client = static::createClient();
-        $client->request('POST', '/login', [
-            'username' => 'invalid_username',
-            'password' => 'invalid_password',
-        ]);
-        $this->assertSelectorTextContains('.alert-danger', 'Invalid credentials');
+        $client->request('POST', '/login', ['_username' => 'invalid_username', '_password' => 'invalid_password']);
+
+        $this->assertStringContainsString('Invalid credentials.', $client->getResponse()->getContent());
     }
 
 
-    public function testLogout()
+    public function testLogoutWorksCorrectly()
     {
         $client = static::createClient();
         $client->request('GET', '/logout');
-        // Vérifie si le client reçoit une exception comme prévu
+
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('This should never be reached!');
     }
+
+
+    public function testRedirectAfterSuccessfulLogin()
+    {
+        $client = static::createClient();
+        $crawler = $client->request('GET', '/login');
+        $form = $crawler->selectButton('Login')->form();
+        $form['_username'] = 'valid_username';
+        $form['_password'] = 'valid_password';
+        $client->submit($form);
+
+        $this->assertEquals(302, $client->getResponse()->getStatusCode());
+        $this->assertEquals('/admin/index', $client->getResponse()->headers->get('Location'));
+    }
+
+
+    public function testLastUsernameIsPreFilledInLoginForm()
+    {
+        $client = static::createClient();
+        $crawler = $client->request('GET', '/login');
+
+        $this->assertEquals('valid_username', $crawler->filter('input[name="_username"]')->attr('value'));
+    }
+
+
+    public function testLoginPageIsAccessibleForAnonymousUsers()
+    {
+        $client = static::createClient();
+        $client->request('GET', '/login');
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+    }
+
+
+
+
+
 }
