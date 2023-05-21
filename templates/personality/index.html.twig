@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello PersonalityController!{% endblock %}
+
+{% block body %}
+    <h1>Add Personality</h1>
+    <form action="{{ path('app_personality') }}" method="post">
+         {{ form_widget(form) }}
+         <button type="submit">Add</button>
+    </form>
+{% endblock %}
