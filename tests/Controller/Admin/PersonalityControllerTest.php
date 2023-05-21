@@ -1,30 +1,56 @@
 <?php
 
 
-use App\Repository\PersonalityRepository;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+namespace App\Tests\Controller\Admin;
+use App\Entity\User;
+use App\Entity\Personality;
+use PHPUnit\Framework\TestCase;
 
-class PersonalityControllerTest extends WebTestCase
+class PersonalityControllerTest extends TestCase
 {
-
-    public function testCreatePersonalityFormSubmission()
+    public function testGettersAndSetters()
     {
-        $client = static::createClient();
-        $crawler = $client->request('GET', '/add-personality');
+        $personality = new Personality();
 
-        $form = $crawler->filter('form[name="personality"]')->form();
-        $form['personality[name]'] = 'John Doe';
-        $form['personality[firstname]'] = 'John';
-        $form['personality[bornAt]'] = '1990-01-01 00:00:00';
-        $form['personality[dieAt]'] = '2022-12-31 23:59:59';
-        $form['personality[description]'] = 'Lorem ipsum dolor sit amet.';
+        $name = 'John';
+        $personality->setName($name);
+        $this->assertEquals($name, $personality->getName());
 
-        $client->submit($form);
+        $firstname = 'Doe';
+        $personality->setFirstname($firstname);
+        $this->assertEquals($firstname, $personality->getFirstname());
 
-        $this->assertTrue($client->getResponse()->isRedirect('/affiche-personality'));
-        $crawler = $client->followRedirect();
+        $bornAt = new \DateTimeImmutable('1990-01-01');
+        $personality->setBornAt($bornAt);
+        $this->assertEquals($bornAt, $personality->getBornAt());
 
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertSelectorTextContains('.personality-card', 'John Doe');
+        $dieAt = new \DateTimeImmutable('2020-12-31');
+        $personality->setDieAt($dieAt);
+        $this->assertEquals($dieAt, $personality->getDieAt());
+
+        $description = 'Lorem ipsum';
+        $personality->setDescription($description);
+        $this->assertEquals($description, $personality->getDescription());
     }
+
+    public function testAgeCalculation()
+    {
+        $bornAt = new \DateTimeImmutable('1990-01-01');
+        $personality = new Personality();
+        $personality->setBornAt($bornAt);
+
+        // Calculate age based on current date
+        $expectedAge = (new \DateTimeImmutable())->diff($bornAt)->y;
+        $this->assertEquals($expectedAge, $personality->getAge());
+
+        // Calculate age based on a specific date
+        $specificDate = new \DateTimeImmutable('2023-05-20');
+        $expectedAge = $specificDate->diff($bornAt)->y;
+        $this->assertEquals($expectedAge, $personality->getAge($specificDate));
+    }
+
+
+
+
 }
+

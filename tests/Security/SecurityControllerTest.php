@@ -5,7 +5,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class SecurityControllerTest extends WebTestCase
 {
-  /*  public function testRedirectLoggedInUser()
+    public function testRedirectLoggedInUser()
     {
         $client = static::createClient();
         $user = new User();
@@ -18,22 +18,20 @@ class SecurityControllerTest extends WebTestCase
         $client->request('GET', '/login');
         // Vérifie si le client est redirigé vers une autre page
         $this->assertTrue($client->getResponse()->isRedirect());
-    }*/
+    }
 
 
     public function testAuthenticationError()
     {
         $client = static::createClient();
-        $client->request('GET', '/login', [
+        $client->request('POST', '/login', [
             'username' => 'invalid_username',
             'password' => 'invalid_password',
         ]);
-
-        $this->assertSelectorExists('.alert-danger', $client->getResponse()->getContent());
+        $this->assertSelectorTextContains('.alert-danger', 'Invalid credentials');
     }
 
 
-/*
     public function testLogout()
     {
         $client = static::createClient();
@@ -42,6 +40,4 @@ class SecurityControllerTest extends WebTestCase
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('This should never be reached!');
     }
-
-*/
 }
