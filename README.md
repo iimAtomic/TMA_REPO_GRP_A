@@ -13,9 +13,9 @@ You can also learn about these practices in [the official Symfony Book][5].
 MOTS DU DEV
 ========================
 Pour lancer cette applicatiotion il faudra dans un premier temps la telecharger soit via un zip fournit par github soit avec des commandes git a savoir :
-                    git init dans votre ide
-                    git remove add origin ...
-                    git pull origin main
+                    * git init dans votre ide
+                    * git remove add origin ...
+                    * git pull origin main
 Les commandes ci dessus sont a entré dans le terminal de votre projet ou de préférence dans un git bash
 Ensuite il faudra executer la commande "composer install" pour installer toute les dependances necessaire au deployement du projet.
 Enfin il faudra entrer la commande " symfony serve-d" pour lancer le projet et avoir une vue . 
