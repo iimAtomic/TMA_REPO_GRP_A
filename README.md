@@ -19,7 +19,7 @@ Pour lancer cette applicatiotion il faudra dans un premier temps la telecharger 
    
 Les commandes ci dessus sont a entré dans le terminal de votre projet ou de préférence dans un git bash
 Ensuite il faudra executer la commande "composer install" pour installer toute les dependances necessaire au deployement du projet.
-Enfin il faudra entrer la commande " symfony serve-d" pour lancer le projet et avoir une vue . 
+Enfin il faudra entrer la commande " symfony serve -d" pour lancer le projet et avoir une vue . 
 
 Requirements
 ------------
